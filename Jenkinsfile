@@ -133,13 +133,13 @@ pipeline {
 
     stages {
 
-//         stage('Build') {
-//
-//             steps {
-//                 gitlabCommitStatus(name: 'build') {
-//                     sh './gradlew --info --stacktrace clean build'
-//                 }
-//             }
+        stage('Build') {
+
+            steps {
+                gitlabCommitStatus(name: 'build') {
+                    sh './gradlew --info --stacktrace clean build'
+                }
+            }
 //
 //             post {
 //                 always {
@@ -152,7 +152,7 @@ pipeline {
 //                     }
 //                 }
 //             }
-//         }
+        }
 
 //         stage('Code Coverage') {
 //             steps {
