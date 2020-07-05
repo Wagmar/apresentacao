@@ -132,7 +132,7 @@ pipeline {
                                   """StandardError=syslog\n"""+
                                   """SyslogIdentifier=$name\n"""+
                                   """ExecStart="""+"\$"+"""java -Xms32m -Xmx128m -jar $name"""+""".jar\n"""+
-                                  """Restart=on-failure\n"""+
+                                  """Restart=on-failure\n\n"""+
                                   """[Install]\n"""+
                                   """WantedBy=multi-user.target\n"""
                     sh """mkdir -p $dirConfig"""
@@ -150,35 +150,28 @@ pipeline {
                         def props = readProperties file: 'build/resources/main/META-INF/build-info.properties'
                         def name = props['build.name']
                         def dirInst = 'build/deploy/DEBIAN'
-                        def binBash = "#!/bin/bash\\n"
-                        def content = binBash+"""systemctl stop $name"""+""".service 2>/dev/null\\n"""+
-                                      """if [ \"\$(id $name 2>/dev/null)\" ]; then \\n"""+
-                                      """    useradd -s /bin/false -d /riocard/msa/$name --system $name \\n"""+
-                                      """fi\\n"""
+                        def binBash = "#!/bin/bash\n"
+                        def content = binBash+"""systemctl stop $name"""+""".service 2>/dev/null\n"""+
+                                      """if [ \"\$(id $name 2>/dev/null)\" ]; then \n"""+
+                                      """    useradd -s /bin/false -d /riocard/msa/$name --system $name \n"""+
+                                      """fi\n"""
 
                         sh """mkdir -p $dirInst"""
-                        sh """echo $content > $dirInst/preinst"""
-//                         writeFile file: """$dirInst/preinst""", text: """$content"""
-//                         sh """chmod 0600 $dirInst/preinst"""
+                        sh """echo '$content' > $dirInst/preinst"""
                         //create postinst
-                        content = binBash+"""chown -R $name:$name /riocard/msa/$name \\n"""+
-                                          """chown -R $name:$name /riocard/logs/$name \\n"""+
-                                          """systemctl reload $name"""+""".service \\n"""+
-                                          """systemctl enable $name"""+""".service \\n"""+
-                                          """systemctl start $name"""+""".service \\n"""+
-                                          """systemctl daemon-reload \\n"""
-                        sh """echo $content > $dirInst/postinst"""
-//                         writeFile file: """$dirInst/postinst""", text: """$content"""
-//                         sh """chmod 0600 $dirInst/postinst"""
+                        content = binBash+"""chown -R $name:$name /riocard/msa/$name \n"""+
+                                          """chown -R $name:$name /riocard/logs/$name \n"""+
+                                          """systemctl reload $name"""+""".service \n"""+
+                                          """systemctl enable $name"""+""".service \n"""+
+                                          """systemctl start $name"""+""".service \n"""+
+                                          """systemctl daemon-reload \n"""
+                        sh """echo '$content' > $dirInst/postinst"""
 
                         //create postrm
-                        content = binBash+"""systemctl stop $name"""+""".service \\n"""+
-                                          """systemctl disable  $name"""+""".service \\n"""+
-                                          """userdel $name \\n"""
-                        sh """echo $content > $dirInst/postinst"""
-
-//                         writeFile file: """$dirInst/postrm""", text: """$content"""
-                        sh """chmod 0600 $dirInst/postrm"""
+                        content = binBash+"""systemctl stop $name"""+""".service \n"""+
+                                          """systemctl disable  $name"""+""".service \n"""+
+                                          """userdel $name \n"""
+                        sh """echo '$content' > $dirInst/postinst"""
                     }
                 }
             }
