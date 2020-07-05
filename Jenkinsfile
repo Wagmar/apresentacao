@@ -171,7 +171,7 @@ pipeline {
                         content = binBash+"""systemctl stop $name"""+""".service \n"""+
                                           """systemctl disable  $name"""+""".service \n"""+
                                           """userdel $name \n"""
-                        sh """echo '$content' > $dirInst/postinst"""
+                        sh """echo '$content' > $dirInst/postrm"""
                     }
                 }
             }
@@ -183,7 +183,8 @@ pipeline {
                 script{
                         def props = readProperties file: 'build/resources/main/META-INF/build-info.properties'
                         def name = props['build.name']
-                        sh """dpkg-deb -b build/deploy $name"""
+                        def version = props['build.version']
+                        sh """dpkg-deb -b build/deploy $name-$version"""
 //                         # sudo dpkg -i msa000.deb
                     }
                 }
