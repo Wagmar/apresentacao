@@ -123,20 +123,21 @@ pipeline {
                                   """[Service]\n"""+
                                   """Type=simple\n"""+
                                   """Environment=LANG=en_US.UTF-8\n"""+
-                                  """Environment=JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/\n"""+
+//                                   """Environment=JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/\n"""+
                                   """UMask=0002\n"""+
                                   """User=msa\n"""+
                                   """Group=msa\n"""+
                                   """WorkingDirectory=/riocard/msa/$name/\n"""+
                                   """StandardOutput=syslog\n"""+
                                   """StandardError=syslog\n"""+
-                                  """SyslogIdentifier=$name\n"""+
-                                  """ExecStart="""+"\$"+"""JAVA_HOME/bin/java -Xms32m -Xmx128m -jar $name"""+""".jar\n"""+
-                                  """Restart=on-failure\n"""+
-                                  """[Install]\n"""+
-                                  """WantedBy=multi-user.target\n"""
+                                  """SyslogIdentifier=$name\\n"""+
+                                  """ExecStart="""+"\$"+"""java -Xms32m -Xmx128m -jar $name"""+""".jar\n"""+
+                                  """Restart=on-failure\\n"""+
+                                  """[Install]\\n"""+
+                                  """WantedBy=multi-user.target\\n"""
                     sh """mkdir -p $dirConfig"""
-                    writeFile file: """$dirConfig/$name"""+""".conf""", text: """$content"""
+                    sh """echo $content > $dirConfig/$name"""+".conf"
+                    //writeFile file: """$dirConfig/$name"""+""".conf""", text: """$content"""
                     }
                 }
             }
@@ -149,32 +150,34 @@ pipeline {
                         def props = readProperties file: 'build/resources/main/META-INF/build-info.properties'
                         def name = props['build.name']
                         def dirInst = 'build/deploy/DEBIAN'
-                        def binBash = "#!/bin/bash\n"
-                        def content = binBash+"""systemctl stop $name"""+""".service 2>/dev/null\n"""+
-                                      """if [ \"\$(id $name 2>/dev/null)\" ]; then \n"""+
-                                      """    useradd -s /bin/false -d /riocard/msa/$name --system $name \n"""+
-                                      """fi\n"""
+                        def binBash = "#!/bin/bash\\n"
+                        def content = binBash+"""systemctl stop $name"""+""".service 2>/dev/null\\n"""+
+                                      """if [ \"\$(id $name 2>/dev/null)\" ]; then \\n"""+
+                                      """    useradd -s /bin/false -d /riocard/msa/$name --system $name \\n"""+
+                                      """fi\\n"""
 
                         sh """mkdir -p $dirInst"""
-                        writeFile file: """$dirInst/preinst""", text: """$content"""
-                        sh """chmod 0600 $dirInst/preinst"""
+                        sh """echo $content > $dirInst/preinst"""
+//                         writeFile file: """$dirInst/preinst""", text: """$content"""
+//                         sh """chmod 0600 $dirInst/preinst"""
                         //create postinst
-                        content = binBash+"""chown -R $name:$name /riocard/msa/$name \n"""+
-                                          """chown -R $name:$name /riocard/logs/$name \n"""+
-                                          """systemctl reload $name"""+""".service \n"""+
-                                          """systemctl enable $name"""+""".service \n"""+
-                                          """systemctl start $name"""+""".service \n"""+
-                                          """systemctl daemon-reload \n"""
-                        sh """mkdir -p $dirInst"""
-                        writeFile file: """$dirInst/postinst""", text: """$content"""
-                        sh """chmod 0600 $dirInst/postinst"""
+                        content = binBash+"""chown -R $name:$name /riocard/msa/$name \\n"""+
+                                          """chown -R $name:$name /riocard/logs/$name \\n"""+
+                                          """systemctl reload $name"""+""".service \\n"""+
+                                          """systemctl enable $name"""+""".service \\n"""+
+                                          """systemctl start $name"""+""".service \\n"""+
+                                          """systemctl daemon-reload \\n"""
+                        sh """echo $content > $dirInst/postinst"""
+//                         writeFile file: """$dirInst/postinst""", text: """$content"""
+//                         sh """chmod 0600 $dirInst/postinst"""
 
                         //create postrm
-                        content = binBash+"""systemctl stop $name"""+""".service \n"""+
-                                          """systemctl disable  $name"""+""".service \n"""+
-                                          """userdel $name \n"""
-                        sh """mkdir -p $dirInst"""
-                        writeFile file: """$dirInst/postrm""", text: """$content"""
+                        content = binBash+"""systemctl stop $name"""+""".service \\n"""+
+                                          """systemctl disable  $name"""+""".service \\n"""+
+                                          """userdel $name \\n"""
+                        sh """echo $content > $dirInst/postinst"""
+
+//                         writeFile file: """$dirInst/postrm""", text: """$content"""
                         sh """chmod 0600 $dirInst/postrm"""
                     }
                 }
