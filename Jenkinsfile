@@ -115,28 +115,28 @@ pipeline {
                     def props = readProperties file: 'build/resources/main/META-INF/build-info.properties'
                     def name = props['build.name']
                     def dirConfig = 'build/deploy/etc/systemd/system'
-                    def content = """[Unit]\\n"""+
-                                  """Description=$name\\n"""+
-                                  """BindTo=network.target\\n"""+
-                                  """After=network.target\\n"""+
-                                  """Requires=network.target\\n\\n"""+
-                                  """[Service]\\n"""+
-                                  """Type=simple\\n"""+
-                                  """Environment=LANG=en_US.UTF-8\\n"""+
-//                                   """Environment=JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/\\n"""+
-                                  """UMask=0002\\n"""+
-                                  """User=msa\\n"""+
-                                  """Group=msa\\n"""+
-                                  """WorkingDirectory=/riocard/msa/$name/\\n"""+
-                                  """StandardOutput=syslog\\n"""+
-                                  """StandardError=syslog\\n"""+
-                                  """SyslogIdentifier=$name\\n"""+
-                                  """ExecStart="""+"\$"+"""java -Xms32m -Xmx128m -jar $name"""+""".jar\\n"""+
-                                  """Restart=on-failure\\n"""+
-                                  """[Install]\\n"""+
-                                  """WantedBy=multi-user.target\\n"""
+                    def content = """[Unit]\n"""+
+                                  """Description=$name\n"""+
+                                  """BindTo=network.target\n"""+
+                                  """After=network.target\n"""+
+                                  """Requires=network.target\n\n"""+
+                                  """[Service]\n"""+
+                                  """Type=simple\n"""+
+                                  """Environment=LANG=en_US.UTF-8\n"""+
+//                                   """Environment=JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/\n"""+
+                                  """UMask=0002\n"""+
+                                  """User=msa\n"""+
+                                  """Group=msa\n"""+
+                                  """WorkingDirectory=/riocard/msa/$name/\n"""+
+                                  """StandardOutput=syslog\n"""+
+                                  """StandardError=syslog\n"""+
+                                  """SyslogIdentifier=$name\n"""+
+                                  """ExecStart="""+"\$"+"""java -Xms32m -Xmx128m -jar $name"""+""".jar\n"""+
+                                  """Restart=on-failure\n"""+
+                                  """[Install]\n"""+
+                                  """WantedBy=multi-user.target\n"""
                     sh """mkdir -p $dirConfig"""
-                    sh """echo $content > $dirConfig/$name"""+".conf"
+                    sh """echo '$content' > $dirConfig/$name"""+".conf"
                     //writeFile file: """$dirConfig/$name"""+""".conf""", text: """$content"""
                     }
                 }
