@@ -8,7 +8,7 @@ pipeline {
     options {
         timestamps()
         gitLabConnection('gl-con1')
-        gitlabBuilds(builds: ['build', 'jacoco','sonarqube','publish','create_control','copy_jar','create_config','create_insts','create_deb'])
+        gitlabBuilds(builds: ['build','jacoco','create_control','copy_jar','create_config','create_insts','create_deb'])
     }
 
     stages {
@@ -33,7 +33,7 @@ pipeline {
                 }
             }
         }
-
+//
         stage('Code Coverage') {
             steps {
                 gitlabCommitStatus(name: 'jacoco') {
@@ -42,36 +42,36 @@ pipeline {
                 }
             }
         }
-
-        stage('Static Code Analysis') {
-            steps {
-                gitlabCommitStatus(name: 'sonarqube') {
-                    withSonarQubeEnv('SonarQube Server') {
-                        sh './gradlew --info --stacktrace sonarqube -x test'
-                    }
-                    timeout(time: 5, unit: 'MINUTES') {
-                        script {
-                            def qualitygate = waitForQualityGate()
-//                             if (qualitygate.status != "OK") {
-//                                 error "Pipeline aborted due to quality gate coverage failure: ${qualitygate.status}"
-//                             }
-                        }
-                    }
-                }
-            }
-        }
-
-        stage('Publish') {
-            steps {
-                gitlabCommitStatus(name: 'publish') {
-                    withCredentials([usernamePassword(credentialsId: 'rctiReleasesRepo',
-                                                      usernameVariable: 'ORG_GRADLE_PROJECT_deployerUsername',
-                                                      passwordVariable: 'ORG_GRADLE_PROJECT_deployerPassword')]) {
-                        sh './gradlew --info --stacktrace publish -x jar'
-                    }
-                }
-            }
-        }
+//
+//         stage('Static Code Analysis') {
+//             steps {
+//                 gitlabCommitStatus(name: 'sonarqube') {
+//                     withSonarQubeEnv('SonarQube Server') {
+//                         sh './gradlew --info --stacktrace sonarqube -x test'
+//                     }
+//                     timeout(time: 5, unit: 'MINUTES') {
+//                         script {
+//                             def qualitygate = waitForQualityGate()
+// //                             if (qualitygate.status != "OK") {
+// //                                 error "Pipeline aborted due to quality gate coverage failure: ${qualitygate.status}"
+// //                             }
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//
+//         stage('Publish') {
+//             steps {
+//                 gitlabCommitStatus(name: 'publish') {
+//                     withCredentials([usernamePassword(credentialsId: 'rctiReleasesRepo',
+//                                                       usernameVariable: 'ORG_GRADLE_PROJECT_deployerUsername',
+//                                                       passwordVariable: 'ORG_GRADLE_PROJECT_deployerPassword')]) {
+//                         sh './gradlew --info --stacktrace publish -x jar'
+//                     }
+//                 }
+//             }
+//         }
 
         stage('Create Control') {
             steps {
@@ -157,7 +157,7 @@ pipeline {
 
                         sh """mkdir -p $dirInst"""
                         writeFile file: """$dirInst/preinst""", text: """$content"""
-
+                        sh """chmod 0600 $dirInst/preinst"""
                         //create postinst
                         content = binBash+"""chown -R $name:$name /riocard/msa/$name \n"""+
                                           """chown -R $name:$name /riocard/logs/$name \n"""+
@@ -167,6 +167,7 @@ pipeline {
                                           """systemctl daemon-reload \n"""
                         sh """mkdir -p $dirInst"""
                         writeFile file: """$dirInst/postinst""", text: """$content"""
+                        sh """chmod 0600 $dirInst/postinst"""
 
                         //create postrm
                         content = binBash+"""systemctl stop $name"""+""".service \n"""+
@@ -174,6 +175,7 @@ pipeline {
                                           """userdel $name \n"""
                         sh """mkdir -p $dirInst"""
                         writeFile file: """$dirInst/postrm""", text: """$content"""
+                        sh """chmod 0600 $dirInst/postrm"""
                     }
                 }
             }
