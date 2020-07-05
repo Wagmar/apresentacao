@@ -8,7 +8,7 @@ pipeline {
     options {
         timestamps()
         gitLabConnection('gl-con1')
-        gitlabBuilds(builds: ['build','jacoco','create_control','copy_jar','create_config','create_insts','create_deb'])
+        gitlabBuilds(builds: ['build','jacoco','sonarqube','create_control','copy_jar','create_config','create_insts','create_deb'])
     }
 
     stages {
@@ -43,23 +43,23 @@ pipeline {
             }
         }
 //
-//         stage('Static Code Analysis') {
-//             steps {
-//                 gitlabCommitStatus(name: 'sonarqube') {
-//                     withSonarQubeEnv('SonarQube Server') {
-//                         sh './gradlew --info --stacktrace sonarqube -x test'
-//                     }
-//                     timeout(time: 5, unit: 'MINUTES') {
-//                         script {
-//                             def qualitygate = waitForQualityGate()
-// //                             if (qualitygate.status != "OK") {
-// //                                 error "Pipeline aborted due to quality gate coverage failure: ${qualitygate.status}"
-// //                             }
-//                         }
-//                     }
-//                 }
-//             }
-//         }
+        stage('Static Code Analysis') {
+            steps {
+                gitlabCommitStatus(name: 'sonarqube') {
+                    withSonarQubeEnv('SonarQube Server') {
+                        sh './gradlew --info --stacktrace sonarqube -x test'
+                    }
+                    timeout(time: 5, unit: 'MINUTES') {
+                        script {
+                            def qualitygate = waitForQualityGate()
+//                             if (qualitygate.status != "OK") {
+//                                 error "Pipeline aborted due to quality gate coverage failure: ${qualitygate.status}"
+//                             }
+                        }
+                    }
+                }
+            }
+        }
 //
 //         stage('Publish') {
 //             steps {
