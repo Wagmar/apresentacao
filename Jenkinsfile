@@ -132,7 +132,7 @@ pipeline {
                                   """StandardOutput=syslog\n"""+
                                   """StandardError=syslog\n"""+
                                   """SyslogIdentifier=$name\n"""+
-                                  """ExecStart=""" +'\$'+ """/usr/lib/jvm/java-8-openjdk-amd64/bin/java -Xms32m -Xmx128m -jar $name-$version"""+""".jar\n"""+
+                                  """ExecStart=/usr/lib/jvm/java-8-openjdk-amd64/bin/java -Xms32m -Xmx128m -jar $name-$version"""+""".jar\n"""+
                                   """Restart=on-failure\n\n"""+
                                   """LimitNOFILE=131072"""+
                                   """LimitNPROC=8192"""+
@@ -207,8 +207,7 @@ pipeline {
                         def name = props['build.name']
                         def version = props['build.version']
                         sh """scp build/$name-$version"""+""".deb jenkins@msahml:/riocard/artefatos"""
-                        sh """echo jenkins@msas \'sudo apt install /riocard/artefatos/$name-$version"""+""".deb\'"""
-
+                        sh """ssh jenkins@msahml \'sudo apt install /riocard/artefatos/$name-$version"""+""".deb\'"""
                     }
                 }
             }
