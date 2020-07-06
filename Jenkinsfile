@@ -8,7 +8,7 @@ pipeline {
     options {
         timestamps()
         gitLabConnection('gl-con1')
-        gitlabBuilds(builds: ['build','jacoco','sonarqube','create_control','copy_jar','create_service','create_insts','create_deb'])
+        gitlabBuilds(builds: ['build','jacoco','sonarqube','publish','create_control','copy_jar','create_service','create_insts','create_deb', 'upload'])
     }
 
     stages {
@@ -60,18 +60,18 @@ pipeline {
                 }
             }
         }
-//
-//         stage('Publish') {
-//             steps {
-//                 gitlabCommitStatus(name: 'publish') {
-//                     withCredentials([usernamePassword(credentialsId: 'rctiReleasesRepo',
-//                                                       usernameVariable: 'ORG_GRADLE_PROJECT_deployerUsername',
-//                                                       passwordVariable: 'ORG_GRADLE_PROJECT_deployerPassword')]) {
-//                         sh './gradlew --info --stacktrace publish -x jar'
-//                     }
-//                 }
-//             }
-//         }
+
+        stage('Publish') {
+            steps {
+                gitlabCommitStatus(name: 'publish') {
+                    withCredentials([usernamePassword(credentialsId: 'rctiReleasesRepo',
+                                                      usernameVariable: 'ORG_GRADLE_PROJECT_deployerUsername',
+                                                      passwordVariable: 'ORG_GRADLE_PROJECT_deployerPassword')]) {
+                        sh './gradlew --info --stacktrace publish -x jar'
+                    }
+                }
+            }
+        }
 
         stage('Create Control') {
             steps {
