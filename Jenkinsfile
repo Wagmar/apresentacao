@@ -186,7 +186,7 @@ pipeline {
                         def props = readProperties file: 'build/resources/main/META-INF/build-info.properties'
                         def name = props['build.name']
                         def version = props['build.version']
-                        sh """dpkg-deb -b build/deploy build/$name-$version.deb"""
+                        sh """dpkg-deb -b build/deploy build/$name-$version"""+""".deb"""
                         //dpkg-deb -b build/deploy build/apresentacao-0.0.1.deb
 //                         # sudo dpkg -i msa000.deb
                     }
