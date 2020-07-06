@@ -131,7 +131,7 @@ pipeline {
                                   """StandardOutput=syslog\n"""+
                                   """StandardError=syslog\n"""+
                                   """SyslogIdentifier=$name\n"""+
-                                  """ExecStart="""+"\$"+"""java -Xms32m -Xmx128m -jar $name"""+""".jar\n"""+
+                                  """ExecStart= java -Xms32m -Xmx128m -jar $name"""+""".jar\n"""+
                                   """Restart=on-failure\n\n"""+
                                   """[Install]\n"""+
                                   """WantedBy=multi-user.target\n"""
@@ -188,7 +188,21 @@ pipeline {
                         def version = props['build.version']
                         sh """dpkg-deb -b build/deploy build/$name-$version"""+""".deb"""
                         //dpkg-deb -b build/deploy build/apresentacao-0.0.1.deb
-//                         # sudo dpkg -i msa000.deb
+                        // # sudo dpkg -i msa000.deb
+                    }
+                }
+            }
+        }
+
+        stage('Upload') {
+            steps {
+                gitlabCommitStatus(name: 'upload') {
+                script{
+                        def props = readProperties file: 'build/resources/main/META-INF/build-info.properties'
+                        def name = props['build.name']
+                        def version = props['build.version']
+                        sh """scp build/$name-$version.deb jenkins@msas:/riocard/msa/artefatos"""
+                        sh
                     }
                 }
             }
