@@ -151,7 +151,10 @@ pipeline {
                         def name = props['build.name']
                         def dirInst = 'build/deploy/DEBIAN'
                         def binBash = "#!/bin/bash\n"
-                        def content = binBash+"""systemctl stop $name"""+""".service 2>/dev/null\n"""+
+                        def content = binBash+
+                                      """if [ systemctl is-active $name ]; then \n"""+
+                                      """    systemctl stop $name"""+""".service \n"""+
+                                      """fi\n"""
                                       """if [ ! \"\$(id $name 2>/dev/null)\" ]; then \n"""+
                                       """    useradd -s /bin/false -d /riocard/msa/$name --system $name \n"""+
                                       """fi\n"""
