@@ -155,19 +155,19 @@ pipeline {
                                       """if [ \"\$(systemctl is-active $name)\" ]; then \n"""+
                                       """    systemctl stop $name"""+""".service \n"""+
                                       """fi\n"""
-                                      """if [ ! \"\$(id $name 2>/dev/null)\" ]; then \n"""+
-                                      """    useradd -s /bin/false -d /riocard/msa/$name --system $name \n"""+
-                                      """fi\n"""
-
                         sh """mkdir -p $dirInst"""
                         sh """echo '$content' > $dirInst/preinst"""
                         sh """chmod 775 $dirInst/preinst"""
                         //create postinst
-                        content = binBash+"""chown -R $name:$name /riocard/msa/$name \n"""+
-                                          """chown -R $name:$name /riocard/logs/$name \n"""+
-                                          """systemctl daemon-reload \n"""+
-                                          """systemctl enable $name"""+""".service \n"""+
-                                          """systemctl start $name"""+""".service \n"""
+                        content = binBash+
+                        """if [ ! \"\$(id $name 2>/dev/null)\" ]; then \n"""+
+                        """    useradd -s /bin/false -d /riocard/msa/$name --system $name \n"""+
+                        """fi\n""" +
+                        """chown -R $name:$name /riocard/msa/$name \n"""+
+                        """chown -R $name:$name /riocard/logs/$name \n"""+
+                        """systemctl daemon-reload \n"""+
+                        """systemctl enable $name"""+""".service \n"""+
+                        """systemctl start $name"""+""".service \n"""
                         sh """echo '$content' > $dirInst/postinst"""
                         sh """chmod 775 $dirInst/postinst"""
                         //create postrm
