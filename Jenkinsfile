@@ -201,7 +201,7 @@ pipeline {
                         def props = readProperties file: 'build/resources/main/META-INF/build-info.properties'
                         def name = props['build.name']
                         def version = props['build.version']
-                        sh """echo build/$name-$version.deb jenkins@msas:/riocard/msa/artefatos"""
+                        sh """echo build/$name-$version"""+""".deb jenkins@msas:/riocard/msa/artefatos"""
                         sh """echo jenkins@msas 'sudo apt install /riocar/artefatos/$name-$version"""+""".deb'"""
 
                     }
