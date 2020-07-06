@@ -152,7 +152,7 @@ pipeline {
                         def dirInst = 'build/deploy/DEBIAN'
                         def binBash = "#!/bin/bash\n"
                         def content = binBash+"""systemctl stop $name"""+""".service 2>/dev/null\n"""+
-                                      """if [ \"\$(id $name 2>/dev/null)\" ]; then \n"""+
+                                      """if [ ! \"\$(id $name 2>/dev/null)\" ]; then \n"""+
                                       """    useradd -s /bin/false -d /riocard/msa/$name --system $name \n"""+
                                       """fi\n"""
 
