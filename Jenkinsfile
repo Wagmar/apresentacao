@@ -8,7 +8,7 @@ pipeline {
     options {
         timestamps()
         gitLabConnection('gl-con1')
-        gitlabBuilds(builds: ['build','jacoco','sonarqube','create_control','copy_jar','create_config','create_insts','create_deb'])
+        gitlabBuilds(builds: ['build','jacoco','sonarqube','create_control','copy_jar','create_service','create_insts','create_deb'])
     }
 
     stages {
@@ -108,9 +108,9 @@ pipeline {
             }
         }
 
-        stage('Create Config') {
+        stage('Create Service') {
             steps {
-                gitlabCommitStatus(name: 'create_config') {
+                gitlabCommitStatus(name: 'create_service') {
                 script{
                     def props = readProperties file: 'build/resources/main/META-INF/build-info.properties'
                     def name = props['build.name']
@@ -136,7 +136,7 @@ pipeline {
                                   """[Install]\n"""+
                                   """WantedBy=multi-user.target\n"""
                     sh """mkdir -p $dirConfig"""
-                    sh """echo '$content' > $dirConfig/$name"""+".conf"
+                    sh """echo '$content' > $dirConfig/$name"""+".service"
                     //writeFile file: """$dirConfig/$name"""+""".conf""", text: """$content"""
                     }
                 }
@@ -187,6 +187,7 @@ pipeline {
                         def name = props['build.name']
                         def version = props['build.version']
                         sh """dpkg-deb -b build/deploy $name-$version"""
+                        //dpkg-deb -b build/deploy build/apresentacao-0.0.1.deb
 //                         # sudo dpkg -i msa000.deb
                     }
                 }
