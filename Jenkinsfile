@@ -125,8 +125,8 @@ pipeline {
                                   """Environment=LANG=en_US.UTF-8\n"""+
                                   """Environment=JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/\n"""+
                                   """UMask=0002\n"""+
-                                  """User=msa\n"""+
-                                  """Group=msa\n"""+
+                                  """User=$name\n"""+
+                                  """Group=$name\n"""+
                                   """WorkingDirectory=/riocard/msa/$name/\n"""+
                                   """StandardOutput=syslog\n"""+
                                   """StandardError=syslog\n"""+
