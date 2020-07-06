@@ -123,7 +123,7 @@ pipeline {
                                   """[Service]\n"""+
                                   """Type=simple\n"""+
                                   """Environment=LANG=en_US.UTF-8\n"""+
-//                                   """Environment=JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/\n"""+
+                                  """Environment=JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/\n"""+
                                   """UMask=0002\n"""+
                                   """User=msa\n"""+
                                   """Group=msa\n"""+
@@ -131,7 +131,7 @@ pipeline {
                                   """StandardOutput=syslog\n"""+
                                   """StandardError=syslog\n"""+
                                   """SyslogIdentifier=$name\n"""+
-                                  """ExecStart= java -Xms32m -Xmx128m -jar $name"""+""".jar\n"""+
+                                  """ExecStart=""" +'\$'+ """JAVA_HOME/bin/java -Xms32m -Xmx128m -jar $name"""+""".jar\n"""+
                                   """Restart=on-failure\n\n"""+
                                   """[Install]\n"""+
                                   """WantedBy=multi-user.target\n"""
@@ -162,10 +162,9 @@ pipeline {
                         //create postinst
                         content = binBash+"""chown -R $name:$name /riocard/msa/$name \n"""+
                                           """chown -R $name:$name /riocard/logs/$name \n"""+
-                                          """systemctl reload $name"""+""".service \n"""+
+                                          """systemctl daemon-reload \n"""+
                                           """systemctl enable $name"""+""".service \n"""+
-                                          """systemctl start $name"""+""".service \n"""+
-                                          """systemctl daemon-reload \n"""
+                                          """systemctl start $name"""+""".service \n"""
                         sh """echo '$content' > $dirInst/postinst"""
                         sh """chmod 775 $dirInst/postinst"""
                         //create postrm
@@ -202,7 +201,7 @@ pipeline {
                         def name = props['build.name']
                         def version = props['build.version']
                         sh """echo build/$name-$version"""+""".deb jenkins@msas:/riocard/msa/artefatos"""
-                        sh """echo jenkins@msas 'sudo apt install /riocar/artefatos/$name-$version"""+""".deb'"""
+                        sh """echo jenkins@msas \'sudo apt install /riocar/artefatos/$name-$version"""+""".deb\'"""
 
                     }
                 }
