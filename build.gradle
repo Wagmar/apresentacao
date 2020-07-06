@@ -185,3 +185,24 @@ sonarqube {
 }
 
 
+apply plugin: 'maven-publish'
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			from components.java
+		}
+	}
+
+	repositories {
+		maven {
+			url rctiReleasesRepo
+			credentials {
+				username "${project.properties.deployerUsername}"
+				password "${project.properties.deployerPassword}"
+			}
+		}
+	}
+}
+
+
