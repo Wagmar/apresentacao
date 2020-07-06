@@ -152,7 +152,7 @@ pipeline {
                         def dirInst = 'build/deploy/DEBIAN'
                         def binBash = "#!/bin/bash\n"
                         def content = binBash+
-                                      """if [ systemctl is-active $name ]; then \n"""+
+                                      """if [ \"\$(systemctl is-active $name)\" ]; then \n"""+
                                       """    systemctl stop $name"""+""".service \n"""+
                                       """fi\n"""
                                       """if [ ! \"\$(id $name 2>/dev/null)\" ]; then \n"""+
