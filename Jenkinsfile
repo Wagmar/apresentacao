@@ -132,8 +132,10 @@ pipeline {
                                   """StandardOutput=syslog\n"""+
                                   """StandardError=syslog\n"""+
                                   """SyslogIdentifier=$name\n"""+
-                                  """ExecStart=""" +'\$'+ """JAVA_HOME/bin/java -Xms32m -Xmx128m -jar $name-$version"""+""".jar\n"""+
+                                  """ExecStart=""" +'\$'+ """/usr/lib/jvm/java-8-openjdk-amd64/bin/java -Xms32m -Xmx128m -jar $name-$version"""+""".jar\n"""+
                                   """Restart=on-failure\n\n"""+
+                                  """LimitNOFILE=131072"""+
+                                  """LimitNPROC=8192"""+
                                   """[Install]\n"""+
                                   """WantedBy=multi-user.target\n"""
                     sh """mkdir -p $dirConfig"""
