@@ -114,6 +114,7 @@ pipeline {
                 script{
                     def props = readProperties file: 'build/resources/main/META-INF/build-info.properties'
                     def name = props['build.name']
+                    def version = props['build.version']
                     def dirConfig = 'build/deploy/etc/systemd/system'
                     def content = """[Unit]\n"""+
                                   """Description=$name\n"""+
@@ -131,7 +132,7 @@ pipeline {
                                   """StandardOutput=syslog\n"""+
                                   """StandardError=syslog\n"""+
                                   """SyslogIdentifier=$name\n"""+
-                                  """ExecStart=""" +'\$'+ """JAVA_HOME/bin/java -Xms32m -Xmx128m -jar $name"""+""".jar\n"""+
+                                  """ExecStart=""" +'\$'+ """JAVA_HOME/bin/java -Xms32m -Xmx128m -jar $name-$version"""+""".jar\n"""+
                                   """Restart=on-failure\n\n"""+
                                   """[Install]\n"""+
                                   """WantedBy=multi-user.target\n"""
@@ -203,7 +204,7 @@ pipeline {
                         def props = readProperties file: 'build/resources/main/META-INF/build-info.properties'
                         def name = props['build.name']
                         def version = props['build.version']
-                        sh """scp build/$name-$version"""+""".deb jenkins@msa:/riocard/artefatos"""
+                        sh """scp build/$name-$version"""+""".deb jenkins@msahml:/riocard/artefatos"""
                         sh """echo jenkins@msas \'sudo apt install /riocard/artefatos/$name-$version"""+""".deb\'"""
 
                     }
