@@ -158,6 +158,7 @@ pipeline {
 
                         sh """mkdir -p $dirInst"""
                         sh """echo '$content' > $dirInst/preinst"""
+                        sh """chmod 775 $dirInst/preinst"""
                         //create postinst
                         content = binBash+"""chown -R $name:$name /riocard/msa/$name \n"""+
                                           """chown -R $name:$name /riocard/logs/$name \n"""+
@@ -166,12 +167,13 @@ pipeline {
                                           """systemctl start $name"""+""".service \n"""+
                                           """systemctl daemon-reload \n"""
                         sh """echo '$content' > $dirInst/postinst"""
-
+                        sh """chmod 775 $dirInst/postinst"""
                         //create postrm
                         content = binBash+"""systemctl stop $name"""+""".service \n"""+
                                           """systemctl disable  $name"""+""".service \n"""+
                                           """userdel $name \n"""
                         sh """echo '$content' > $dirInst/postrm"""
+                        sh """chmod 775 $dirInst/postrm"""
                     }
                 }
             }
