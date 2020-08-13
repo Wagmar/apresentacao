@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 class ExampleCallWebServiceSpec extends ConfigTest {
@@ -38,7 +39,11 @@ class ExampleCallWebServiceSpec extends ConfigTest {
         response.getProperties() != null
 
         response
+                //validando o status
                 .andExpect(status().isOk())
+                //validando conteudo retornado
+                .andExpect(content().json(jsonRequest))
+                //criando a documentação
                 .andDo(document( snippetId , responseFields(
                         fieldWithPath("data.message").description("Nome"),
                         fieldWithPath("data.id").description("Idade")
